@@ -18,6 +18,7 @@
  */
 
 #include "platform/MSWindowsScreen.h"
+#include "platform/MSWindowsImpersonation.h"
 
 #include "platform/MSWindowsDropTarget.h"
 #include "client/Client.h"
@@ -1882,15 +1883,15 @@ const std::string&
 MSWindowsScreen::getDropTarget() const
 {
     if (m_dropTargetPath.empty()) {
-        // SHGetFolderPath is deprecated in vista, but use it for xp support.
-        char desktopPath[MAX_PATH];
-        if (SUCCEEDED(SHGetFolderPath(nullptr, CSIDL_DESKTOP, nullptr, 0, desktopPath))) {
-            m_dropTargetPath = std::string(desktopPath);
-            LOG_INFO("using desktop for drop target: %s", m_dropTargetPath.c_str());
+        // LLM generated code
+        std::string desktopPath = getInteractiveUserDesktopPath();
+
+        if (desktopPath.empty()) {
+            LOG_ERR("failed to get desktop path, no drop target available");
         }
-        else {
-            LOG_ERR("failed to get desktop path, no drop target available, error=%d", GetLastError());
-        }
+
+        m_dropTargetPath = desktopPath;
+        LOG_DEBUG("using desktop path for drop target: %s", desktopPath.c_str());
     }
     return m_dropTargetPath;
 }
